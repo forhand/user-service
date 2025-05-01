@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.entity.User;
-import org.example.user_service.exceptionHendler.exception.UserNotFoundException;
+import org.example.user_service.handler.exception.UserNotFoundException;
 import org.example.user_service.mapper.UserMapper;
 import org.example.user_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
