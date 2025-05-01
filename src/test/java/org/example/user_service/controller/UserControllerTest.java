@@ -38,7 +38,6 @@ class UserControllerTest {
 
   @BeforeEach
   void setUp() {
-
     mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
     objectMapper = new ObjectMapper();
@@ -98,7 +97,6 @@ class UserControllerTest {
     List<Long> userIds = Arrays.asList(1L, 2L, 3L);
     List<UserDto> users = createUsers(userIds);
     when(userService.getUsersByIds(userIds)).thenReturn(users);
-
 
     mockMvc.perform(get(urlTemplate)
               .param("userId", String.valueOf(userIds.get(0)))
