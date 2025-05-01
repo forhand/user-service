@@ -40,6 +40,7 @@ class UserControllerTest {
   private ObjectMapper objectMapper;
   private UserDataContainer container;
   private String url = "/api/users";
+  private String userHeaderFilter = "x-user-id";
 
   @BeforeEach
   void setUp() {
@@ -100,7 +101,8 @@ class UserControllerTest {
 
     mockMvc.perform(post(urlTemplate)
                     .content(objectMapper.writeValueAsString(invalidDto))
-                    .contentType(MediaType.APPLICATION_JSON))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(userHeaderFilter,1L))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errorMessages", hasSize(4)))
             .andExpect(jsonPath("$.errorMessages[*]", containsInAnyOrder(

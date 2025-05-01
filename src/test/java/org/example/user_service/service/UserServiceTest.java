@@ -1,5 +1,6 @@
 package org.example.user_service.service;
 
+import org.example.user_service.config.context.UserContext;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
@@ -45,6 +46,8 @@ class UserServiceTest {
   private UserMapperImpl userMapper;
   @Mock
   private EventPublisherService eventPublisherUtil;
+  @Mock
+  private UserContext userContext;
   @InjectMocks
   private UserService userService;
   @Captor
@@ -74,6 +77,7 @@ class UserServiceTest {
   void testGetUser() {
     long validUserId = userEntity.getId();
     when(userRepository.findById(validUserId)).thenReturn(Optional.ofNullable(userEntity));
+    when((userContext.getUserId())).thenReturn(validUserId);
 
     UserDto actUserDto = userService.getUser(validUserId, false);
 

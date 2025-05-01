@@ -3,7 +3,6 @@ package org.example.user_service.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.handler.exception.DataValidationException;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.http.HttpRequest;
 import java.util.List;
 
 @RestController
@@ -30,7 +28,7 @@ public class UserController {
   private final UserService userService;
 
   @Autowired
-  public UserController( @Value("${client.skip_event.header}") String skipEventHeader,
+  public UserController(@Value("${client.skip_event.header}") String skipEventHeader,
                         UserService userService) {
     this.skipEventHeader = skipEventHeader;
     this.userService = userService;
@@ -44,8 +42,6 @@ public class UserController {
     boolean skipEvent = getSkipEvent(request);
     return userService.getUser(userId, skipEvent);
   }
-
-
 
   @PostMapping("/register")
   public UserDto createUser(@RequestBody @Valid UserRegistrationDto user) {
