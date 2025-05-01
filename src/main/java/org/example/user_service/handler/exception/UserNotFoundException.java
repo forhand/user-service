@@ -1,4 +1,4 @@
-package org.example.user_service.exceptionHendler.exception;
+package org.example.user_service.handler.exception;
 
 public class UserNotFoundException extends RuntimeException{
   public UserNotFoundException(long userId) {
