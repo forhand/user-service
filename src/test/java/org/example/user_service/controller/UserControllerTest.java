@@ -3,7 +3,9 @@ package org.example.user_service.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.handler.GlobalExceptionHandler;
 import org.example.user_service.service.UserService;
+import org.example.user_service.util.container.UserDataContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,20 +36,24 @@ class UserControllerTest {
   private UserController controller;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
+  private UserDataContainer container;
   private String url = "/api/users";
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
 
     objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
+    container = new UserDataContainer();
   }
 
   @Test
   void testGetUser() throws Exception {
     long userId = 1L;
-    String urlTemplate = url + "/" + userId;
+    String urlTemplate = "%s/%d".formatted(url, userId);
     UserDto expectedUser = UserDto.builder().id(userId).build();
     when(userService.getUser(userId)).thenReturn(expectedUser);
 
@@ -59,7 +65,7 @@ class UserControllerTest {
   @Test
   void testGetUserWithInvalidUserId() throws Exception {
     long invalidUserId = 0L;
-    String urlTemplate = url + "/" + invalidUserId;
+    String urlTemplate = "%s/%d".formatted(url, invalidUserId);
 
     mockMvc.perform(get(urlTemplate))
             .andExpect(status().isBadRequest());
@@ -68,8 +74,9 @@ class UserControllerTest {
   @Test
   void testCreateUser() throws Exception {
     String urlTemplate = url + "/register";
-    UserDto requestDto = UserDto.builder().username("user").build();
-    UserDto savedUser = UserDto.builder().id(1L).username("user").build();
+    UserDto requestDto = container.getUserDto();
+    requestDto.setId(null);
+    UserDto savedUser = container.getUserDto();
     when(userService.createUser(requestDto)).thenReturn(savedUser);
 
     mockMvc.perform(post(urlTemplate)
