@@ -3,6 +3,8 @@ package org.example.user_service.handler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.example.user_service.handler.exception.DataValidationException;
+import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,8 +18,22 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(ConstraintViolationException e, HttpServletRequest rq) {
-    log.error("validation error: {}", e.getMessage(), e);
+    log.error("Validation error: {}", e.getMessage(), e);
     System.out.println(e.getMessage());
+    return responseBuild(e.getMessage(), rq.getRequestURI());
+  }
+
+  @ExceptionHandler(DataValidationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleDataValidationException(DataValidationException e, HttpServletRequest rq) {
+    log.error("Validation error: {}", e.getMessage(), e);
+    return responseBuild(e.getMessage(), rq.getRequestURI());
+  }
+
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest rq) {
+    log.error("Exception: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
@@ -28,10 +44,17 @@ public class GlobalExceptionHandler {
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest rq) {
+    log.error("IllegalArgumentException: {}", e.getMessage(), e);
+    return responseBuild(e.getMessage(), rq.getRequestURI());
+  }
+
   @ExceptionHandler(RuntimeException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleRuntimeException(RuntimeException e, HttpServletRequest rq) {
-    log.error("Exception: {}", e.getMessage(), e);
+    log.error("RuntimeException: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
