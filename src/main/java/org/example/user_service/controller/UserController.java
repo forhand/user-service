@@ -1,9 +1,11 @@
 package org.example.user_service.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.handler.exception.DataValidationException;
 import org.example.user_service.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +25,15 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/{user_id}")
-  public UserDto getUser(@PathVariable("user_id") @Positive long userId) {
+  public UserDto getUser(@PathVariable("user_id") long userId) {
+    if (userId <= 0) {
+      throw new DataValidationException("User id must be positive");
+    }
     return userService.getUser(userId);
   }
 
   @PostMapping("/register")
-  public UserDto createUser(@RequestBody @NotNull UserDto user) {
+  public UserDto createUser(@RequestBody @Valid UserDto user) {
       return userService.createUser(user);
   }
 
