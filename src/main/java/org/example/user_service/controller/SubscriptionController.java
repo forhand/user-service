@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.user_service.dto.subcription.FollowRequest;
 import org.example.user_service.service.subscription.SubscriptionService;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,4 +31,10 @@ public class SubscriptionController {
     long followeeId = followRequest.getFolloweeId();
     subscriptionService.unfollowUser(followerId, followeeId);
   }
+
+  @GetMapping("/followerCount/{userId}")
+  public int getFollowerCount(@PathVariable("userId") long followerId) {
+      return subscriptionService.getFollowerCount(followerId);
+  }
+
 }
