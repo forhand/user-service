@@ -38,7 +38,6 @@ public class User {
   @JoinTable(name = "subscriptions",
           joinColumns = @JoinColumn(name = "followee_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))
   private List<User> followers;
-
   @ManyToMany(mappedBy = "followers")
   private List<User> followees;
 
