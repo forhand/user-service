@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.user_service.dto.subcription.FollowRequest;
 import org.example.user_service.handler.GlobalExceptionHandler;
+import org.example.user_service.handler.exception.DataValidationException;
 import org.example.user_service.service.subscription.SubscriptionService;
 import org.example.user_service.util.container.SubscriptionDataContainer;
 import org.example.user_service.util.container.UserDataContainer;
@@ -17,6 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +49,7 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void followUser_success() throws Exception {
+  void testFollowUser_success() throws Exception {
     String url = "%s/follow".formatted(this.uri);
     FollowRequest request = subscriptionDataContainer.getFollowRequest();
 
@@ -56,7 +60,7 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void followUser_invalidFollowerId() throws Exception {
+  void testFollowUser_invalidFollowerId() throws Exception {
     String url = "%s/follow".formatted(this.uri);
     FollowRequest request = FollowRequest.builder()
             .followerId(-1L)
@@ -69,7 +73,7 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void followUser_invalidFolloweeId() throws Exception {
+  void testFollowUser_invalidFolloweeId() throws Exception {
     String url = "%s/follow".formatted(this.uri);
     FollowRequest request = FollowRequest.builder()
             .followeeId(0L)
@@ -81,5 +85,54 @@ class SubscriptionControllerTest {
             .andExpect(status().isBadRequest());
   }
 
+  @Test
+  void testFollowUser_throwDataValidationException() throws Exception {
+    String url = "%s/follow".formatted(this.uri);
+    FollowRequest request = subscriptionDataContainer.getFollowRequest();
+    doThrow(new DataValidationException("Invalid Request")).when(service).followUser(any(Long.class), any(Long.class));
+
+    mockMvc.perform(post(url)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+  }
+
+
+  @Test
+  void testUfnfollowUser_success() throws Exception {
+    String url = "%s/unfollow".formatted(this.uri);
+    FollowRequest request = subscriptionDataContainer.getFollowRequest();
+
+    mockMvc.perform(delete(url)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  void testUnfollowUser_invalidFollowerId() throws Exception {
+    String url = "%s/follow".formatted(this.uri);
+    FollowRequest request = FollowRequest.builder()
+            .followerId(-1L)
+            .build();
+
+    mockMvc.perform(post(url)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void testUfollowUser_invalidFolloweeId() throws Exception {
+    String url = "%s/follow".formatted(this.uri);
+    FollowRequest request = FollowRequest.builder()
+            .followeeId(0L)
+            .build();
+
+    mockMvc.perform(post(url)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+  }
 
 }
