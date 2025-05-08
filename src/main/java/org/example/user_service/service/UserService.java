@@ -55,14 +55,14 @@ public class UserService {
   public void validateUserExists(long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(
-              messageSource.getMessage("user.not_found", new Object[]{userId}, Locale.getDefault())
+              messageSource.getMessage("exception.user.not_found", new Object[]{userId}, Locale.getDefault())
       );
     }
   }
 
   private User getUserById(long userId) {
     return userRepository.findById(userId).orElseThrow(
-            () -> new ResourceNotFoundException(messageSource.getMessage("user.not_found", new Object[]{userId}, Locale.getDefault())
+            () -> new ResourceNotFoundException(messageSource.getMessage("exception.user.not_found", new Object[]{userId}, Locale.getDefault())
             ));
   }
 }
