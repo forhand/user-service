@@ -1,0 +1,24 @@
+package org.example.user_service.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.user_service.dto.subcription.FollowRequest;
+import org.example.user_service.service.subscription.SubscriptionService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/subscription")
+@RequiredArgsConstructor
+public class SubscriptionController {
+  private final SubscriptionService subscriptionService;
+
+  @PostMapping("/follow")
+  public void followUser(@RequestBody @Valid FollowRequest followRequest) {
+    long followerId = followRequest.getFollowerId();
+    long followeeId = followRequest.getFolloweeId();
+    subscriptionService.followUser(followerId, followeeId);
+  }
+}
