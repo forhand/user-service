@@ -2,7 +2,7 @@ package org.example.user_service.service;
 
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.entity.User;
-import org.example.user_service.exceptionHendler.exception.UserNotFoundException;
+import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapperImpl;
 import org.example.user_service.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -11,21 +11,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private MessageSource messageSource;
   @Spy
   private UserMapperImpl userMapper;
   @InjectMocks
@@ -34,9 +41,9 @@ class UserServiceTest {
   @Test
   void testGetUserNotExist() {
     long invalidUserId = -1;
-    when(userRepository.findById(invalidUserId)).thenThrow(new UserNotFoundException(invalidUserId));
+    when(userRepository.findById(invalidUserId)).thenThrow(new ResourceNotFoundException("User not found"));
 
-    assertThrows(UserNotFoundException.class, () -> userService.getUser(invalidUserId));
+    assertThrows(ResourceNotFoundException.class, () -> userService.getUser(invalidUserId));
   }
 
   @Test
@@ -72,7 +79,7 @@ class UserServiceTest {
 
   @Test
   public void testCreateUserWithNullArgument() {
-    UserDto userDto =  null;
+    UserDto userDto = null;
     when(userRepository.save(null)).thenThrow(new IllegalArgumentException());
 
     assertThrows(IllegalArgumentException.class, () -> userService.createUser(userDto));
@@ -121,6 +128,21 @@ class UserServiceTest {
     verify(userRepository, times(0)).save(deactivatedUser);
     assertEquals(userDto.getId(), userId);
     assertEquals(userDto.getActive(), Boolean.FALSE);
+  }
+
+  @Test
+  void validateUserExists() {
+    when(userRepository.existsById(any(Long.class))).thenReturn(true);
+
+    assertDoesNotThrow(() -> userService.validateUserExists(1L));
+  }
+
+  @Test
+  void validateUserExists_throwsException() {
+    when(userRepository.existsById(any(Long.class))).thenReturn(false);
+    when(messageSource.getMessage(any(String.class), any(), any())).thenReturn("User not found");
+
+    assertThrows(ResourceNotFoundException.class, () -> userService.validateUserExists(1L));
   }
 
   private static List<User> getUsers(List<Long> userIds) {
