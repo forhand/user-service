@@ -22,13 +22,28 @@ public class SubscriptionDataValidator {
     checkSubscribingSelf(followerId, followeeId);
     userService.validateUserExists(followerId);
     userService.validateUserExists(followeeId);
-    checkSubscription(followerId, followeeId);
+    checkSubscriptionExists(followerId, followeeId);
   }
 
-  private void checkSubscription(long followerId, long followeeId) {
+  public void validateUnfollowUser(long followerId, long followeeId) {
+    checkSubscribingSelf(followerId, followeeId);
+    userService.validateUserExists(followerId);
+    userService.validateUserExists(followeeId);
+    checkSubscriptionNotExists(followerId, followeeId);
+  }
+
+  private void checkSubscriptionExists(long followerId, long followeeId) {
     if (subscriptionRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
       throw new DataValidationException(
               messageSource.getMessage("validation.subscription.already.exists", null, null)
+      );
+    }
+  }
+
+  private void checkSubscriptionNotExists(long followerId, long followeeId) {
+    if (!subscriptionRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
+      throw new DataValidationException(
+              messageSource.getMessage("validation.subscription.not.exist", null, null)
       );
     }
   }
