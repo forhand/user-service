@@ -20,8 +20,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +35,7 @@ class SubscriptionControllerTest {
   private SubscriptionController controller;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
-  private UserDataContainer container;
+  private UserDataContainer userDataContainer;
   private final String uri = "/api/subscription";
   private SubscriptionDataContainer subscriptionDataContainer;
 
@@ -44,7 +47,7 @@ class SubscriptionControllerTest {
 
     objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
-    container = new UserDataContainer();
+    userDataContainer = new UserDataContainer();
     subscriptionDataContainer = new SubscriptionDataContainer();
   }
 
@@ -134,5 +137,19 @@ class SubscriptionControllerTest {
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void getFollowerCount() throws Exception {
+    long userId = 1L;
+    String url = "%s/followerCount/%s".formatted(this.uri, userId);
+    int expectedCount = 10;
+    when(service.getFollowerCount(userId)).thenReturn(expectedCount);
+
+    mockMvc.perform(get(url))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").value(expectedCount));
+
+  }
+
 
 }
