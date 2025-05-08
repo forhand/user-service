@@ -19,5 +19,8 @@ public interface SubscriptionRepository extends CrudRepository<User, Long> {
 
   @Query(nativeQuery = true, value = "select exists(select 1 from subscriptions where follower_id = :followerId and followee_id = :followeeId)")
   boolean existsByFollowerIdAndFolloweeId(long followerId, long followeeId);
-  
+
+  @Query(nativeQuery = true, value = "delete from subscriptions where follower_id = :followerId and followee_id = :followeeId")
+  @Modifying
+  void unfollowUser(long followerId, long followeeId);
 }
