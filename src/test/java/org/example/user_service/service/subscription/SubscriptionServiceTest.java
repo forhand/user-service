@@ -13,9 +13,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
@@ -73,5 +76,22 @@ class SubscriptionServiceTest {
     doThrow(new ResourceNotFoundException("User not found")).when(validator).validateFollowUser(anyLong(), anyLong());
 
     assertThrows(ResourceNotFoundException.class, () -> service.followUser(1L, 2L));
+  }
+
+  @Test
+  void testGetFollowerCount() {
+    int expectedCount = 10;
+    when(subscriptionRepository.findFolloweesAmountByFollowerId(anyLong())).thenReturn(expectedCount);
+
+    int actualCount = service.getFollowerCount(1L);
+
+    assertEquals(expectedCount, actualCount);
+  }
+
+  @Test
+  void testGetFollowerCount_userNotFound() {
+    doThrow(new ResourceNotFoundException("User not found")).when(validator).validateUserExists(anyLong());
+
+    assertThrows(ResourceNotFoundException.class, () -> service.getFollowerCount(1L));
   }
 }
