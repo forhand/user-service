@@ -53,4 +53,8 @@ public class SubscriptionDataValidator {
       throw new DataValidationException(messageSource.getMessage("validation.subscribe.self.error", null, null));
     }
   }
+
+  public void validateUserExists(long followerId) {
+    userService.validateUserExists(followerId);
+  }
 }
