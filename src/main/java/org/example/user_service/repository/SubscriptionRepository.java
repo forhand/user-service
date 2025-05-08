@@ -7,8 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Stream;
-
 @Repository
 public interface SubscriptionRepository extends CrudRepository<User, Long> {
 
@@ -23,4 +21,8 @@ public interface SubscriptionRepository extends CrudRepository<User, Long> {
   @Query(nativeQuery = true, value = "delete from subscriptions where follower_id = :followerId and followee_id = :followeeId")
   @Modifying
   void unfollowUser(long followerId, long followeeId);
+
+  @Query(nativeQuery = true, value = "select count(id) from subscriptions where follower_id = :followerId")
+  int findFolloweesAmountByFollowerId(long followerId);
+  
 }
