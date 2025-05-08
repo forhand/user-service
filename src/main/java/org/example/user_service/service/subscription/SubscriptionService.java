@@ -18,4 +18,10 @@ public class SubscriptionService {
     validator.validateFollowUser(followerId, followeeId);
     subscriptionRepository.followUser(followerId, followeeId);
   }
+
+  public void unfollowUser(long followerId, long followeeId) {
+    validator.validateUnfollowUser(followerId, followeeId);
+    subscriptionRepository.unfollowUser(followerId, followeeId);
+  }
+
 }
