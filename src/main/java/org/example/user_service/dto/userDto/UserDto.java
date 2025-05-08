@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +20,10 @@ public class UserDto {
   private String username;
   @NotBlank
   private String password;
+  @NotBlank
+  private String email;
   @NotNull
   private Boolean active;
+  private List<Long> followerIds;
+  private List<Long> followeeIds;
 }
