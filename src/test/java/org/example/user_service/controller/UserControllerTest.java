@@ -3,6 +3,7 @@ package org.example.user_service.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.handler.GlobalExceptionHandler;
 import org.example.user_service.service.UserService;
 import org.example.user_service.util.container.UserDataContainer;
@@ -74,8 +75,7 @@ class UserControllerTest {
   @Test
   void testCreateUser() throws Exception {
     String urlTemplate = url + "/register";
-    UserDto requestDto = container.getUserDto();
-    requestDto.setId(null);
+    UserRegistrationDto requestDto = container.getUserRegistrationDto();
     UserDto savedUser = container.getUserDto();
     when(userService.createUser(requestDto)).thenReturn(savedUser);
 
