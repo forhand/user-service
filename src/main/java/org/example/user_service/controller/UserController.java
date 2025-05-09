@@ -34,12 +34,12 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public UserDto createUser(@RequestBody @NotNull @Valid UserRegistrationDto user) {
+  public UserDto createUser(@RequestBody @Valid UserRegistrationDto user) {
       return userService.createUser(user);
   }
 
   @PutMapping("/{user_id}/deactivate")
-  public UserDto deactivatesUserProfile(@PathVariable("user_id") @NotNull @Positive Long userId) {
+  public UserDto deactivatesUserProfile(@PathVariable("user_id") @Positive Long userId) {
     return userService.deactivateUserProfile(userId);
   }
 

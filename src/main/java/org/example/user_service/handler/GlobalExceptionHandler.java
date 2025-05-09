@@ -24,14 +24,14 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest rq) {
-    log.error("Validation error: {}", e.getMessage(), e);
-    return responseBuild(e.getMessage(), rq.getRequestURI());
+    log.error("HttpMessageNotReadableException: {}", e.getMessage(), e);
+    return responseBuild("Invalid request body", rq.getRequestURI());
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest rq) {
-    log.error("Validation error: {}", e.getMessage(), e);
+    log.error("ConstraintViolationException: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
@@ -42,28 +42,28 @@ public class GlobalExceptionHandler {
     List<String> errorMessages = result.getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toList();
-    log.error("Validation error: {}", e.getMessage(), e);
-    return responseBuild(errorMessages.toString(), rq.getRequestURI());
+    log.error("MethodArgumentNotValidException: {}", e.getMessage(), e);
+    return responseBuild("Invalid request body", rq.getRequestURI(), errorMessages);
   }
 
   @ExceptionHandler(DataValidationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleDataValidationException(DataValidationException e, HttpServletRequest rq) {
-    log.error("Validation error: {}", e.getMessage(), e);
+    log.error("DataValidationException error: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest rq) {
-    log.error("Exception: {}", e.getMessage(), e);
+    log.error("ResourceNotFoundException: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e, HttpServletRequest rq) {
-    log.error("Exception: {}", e.getMessage(), e);
+    log.error("MissingServletRequestParameterException: {}", e.getMessage(), e);
     return responseBuild(e.getMessage(), rq.getRequestURI());
   }
 
@@ -93,5 +93,11 @@ public class GlobalExceptionHandler {
             .message(message)
             .url(requestURI)
             .build();
+  }
+
+  private ErrorResponse responseBuild(String message, String requestURI, List<String> errorMessages) {
+    ErrorResponse errorResponse = responseBuild(message, requestURI);
+    errorResponse.setErrorMessages(errorMessages);
+    return errorResponse;
   }
 }
