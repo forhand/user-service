@@ -58,6 +58,7 @@ class UserMapperTest {
            .username(userDto.getUsername())
            .email(userDto.getEmail())
            .active(userDto.isActive())
+           .age(userDto.getAge())
            .build();
     User actEntity = userMapper.toEntity(userDto);
 
@@ -80,6 +81,7 @@ class UserMapperTest {
     User expEntity = User.builder()
             .username(dto.getUsername())
             .email(dto.getEmail())
+            .age(dto.getAge())
             .build();
 
     User actEntity = userMapper.toEntity(dto);

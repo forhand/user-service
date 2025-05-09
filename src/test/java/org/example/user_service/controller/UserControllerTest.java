@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
@@ -88,6 +89,28 @@ class UserControllerTest {
   }
 
   @Test
+  void testCreateUser_invalid() throws Exception {
+    String urlTemplate = url + "/register";
+    UserRegistrationDto invalidDto = UserRegistrationDto.builder()
+            .username("")
+            .password("          ")
+            .age(-1)
+            .email("invalidEmail")
+            .build();
+
+    mockMvc.perform(post(urlTemplate)
+                    .content(objectMapper.writeValueAsString(invalidDto))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorMessages", hasSize(4)))
+            .andExpect(jsonPath("$.errorMessages[*]", containsInAnyOrder(
+                    "Username must not be blank",
+                    "Password must not be blank",
+                    "Age must be between 0 and 150",
+                    "Email must be valid")));
+  }
+
+  @Test
   void testCreateUserWithNull() throws Exception {
     String urlTemplate = url + "/register";
     UserDto requestDto = null;
@@ -106,9 +129,9 @@ class UserControllerTest {
     when(userService.getUsersByIds(userIds)).thenReturn(users);
 
     mockMvc.perform(get(urlTemplate)
-              .param("userId", String.valueOf(userIds.get(0)))
-              .param("userId", String.valueOf(userIds.get(1)))
-              .param("userId", String.valueOf(userIds.get(2))))
+                    .param("userId", String.valueOf(userIds.get(0)))
+                    .param("userId", String.valueOf(userIds.get(1)))
+                    .param("userId", String.valueOf(userIds.get(2))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(users.size())))
             .andExpect(jsonPath("$[0].id", is(users.get(0).getId().intValue())));

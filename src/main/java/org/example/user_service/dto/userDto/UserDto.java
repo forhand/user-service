@@ -17,6 +17,7 @@ public class UserDto {
   private Long id;
   @NotBlank
   private String username;
+  private int age;
   @NotBlank
   private String email;
   private boolean active;

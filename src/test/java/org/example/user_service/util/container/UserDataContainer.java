@@ -14,6 +14,7 @@ public class UserDataContainer {
   private String userName;
   private final String password;
   private String userEmail;
+  private int age;
   private boolean active;
   private List<User> followers;
   private List<User> followees;
@@ -25,6 +26,7 @@ public class UserDataContainer {
     userEmail = "email%d@domain.com".formatted(++id);
     active = true;
     password = "password";
+    age = 18;
     this.followers = getUsers();
     this.followees = getUsers();
   }
@@ -35,6 +37,7 @@ public class UserDataContainer {
             .username(userName)
             .password(password)
             .email(userEmail)
+            .age(age)
             .active(active)
             .followers(followers)
             .followees(followees)
@@ -46,6 +49,7 @@ public class UserDataContainer {
             .id(userId)
             .username(userName)
             .email(userEmail)
+            .age(age)
             .active(active)
             .followerIds(getUserIds(followers))
             .followeeIds(getUserIds(followees))
@@ -57,6 +61,7 @@ public class UserDataContainer {
             .username(userName)
             .password(password)
             .email(userEmail)
+            .age(age)
             .build();
   }
 

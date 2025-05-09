@@ -32,6 +32,8 @@ public class User {
   private String password;
   @Column(name = "email", length = 64, nullable = false, unique = true)
   private String email;
+  @Column(name = "age", nullable = false)
+  private Integer age;
   @Column(name = "active", nullable = false)
   private boolean active;
   @ManyToMany
