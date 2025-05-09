@@ -1,6 +1,7 @@
 package org.example.user_service.mapper;
 
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
 import org.example.user_service.util.container.UserDataContainer;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,11 +54,14 @@ class UserMapperTest {
 
   @Test
   void toEntity() {
-    user.setFollowers(null);
-    user.setFollowees(null);
-    User entity = userMapper.toEntity(userDto);
+   User expEntity = User.builder()
+           .username(userDto.getUsername())
+           .email(userDto.getEmail())
+           .active(userDto.isActive())
+           .build();
+    User actEntity = userMapper.toEntity(userDto);
 
-    assertEquals(user, entity);
+    assertEquals(expEntity, actEntity);
   }
 
   @Test
@@ -68,5 +72,18 @@ class UserMapperTest {
     User entity = userMapper.toEntity(userDto);
 
     assertEquals(user.getId(), entity.getId());
+  }
+
+  @Test
+  void testToEntity() {
+    UserRegistrationDto dto = container.getUserRegistrationDto();
+    User expEntity = User.builder()
+            .username(dto.getUsername())
+            .email(dto.getEmail())
+            .build();
+
+    User actEntity = userMapper.toEntity(dto);
+
+    assertEquals(expEntity, actEntity);
   }
 }
