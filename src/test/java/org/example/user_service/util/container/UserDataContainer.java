@@ -1,6 +1,7 @@
 package org.example.user_service.util.container;
 
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
 
 import java.util.ArrayList;
@@ -44,11 +45,18 @@ public class UserDataContainer {
     return UserDto.builder()
             .id(userId)
             .username(userName)
-            .password(password)
             .email(userEmail)
             .active(active)
             .followerIds(getUserIds(followers))
             .followeeIds(getUserIds(followees))
+            .build();
+  }
+
+  public UserRegistrationDto getUserRegistrationDto() {
+    return UserRegistrationDto.builder()
+            .username(userName)
+            .password(password)
+            .email(userEmail)
             .build();
   }
 
