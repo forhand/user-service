@@ -15,15 +15,13 @@ import java.util.List;
 @Builder
 public class UserDto {
 
-  private Long id;
+  protected Long id;
   @NotBlank
-  private String username;
+  protected String username;
   @NotBlank
-  private String password;
-  @NotBlank
-  private String email;
+  protected String email;
   @NotNull
-  private Boolean active;
-  private List<Long> followerIds;
-  private List<Long> followeeIds;
+  protected Boolean active;
+  protected List<Long> followerIds;
+  protected List<Long> followeeIds;
 }
