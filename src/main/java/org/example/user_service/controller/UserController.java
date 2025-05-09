@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.handler.exception.DataValidationException;
 import org.example.user_service.service.UserService;
@@ -33,7 +34,7 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public UserDto createUser(@RequestBody @Valid UserDto user) {
+  public UserDto createUser(@RequestBody @NotNull @Valid UserRegistrationDto user) {
       return userService.createUser(user);
   }
 
