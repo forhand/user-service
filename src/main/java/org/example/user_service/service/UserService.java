@@ -3,8 +3,10 @@ package org.example.user_service.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserFilterDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
+import org.example.user_service.filter.user.UserFilter;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapper;
 import org.example.user_service.repository.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class UserService {
   private final UserMapper userMapper;
   private final MessageSource messageSource;
   private final PasswordEncoder encoder;
+  private final List<UserFilter> userFilters;
 
   public UserDto getUser(long userId) {
     User user = getUserById(userId);
@@ -41,6 +45,18 @@ public class UserService {
   public List<UserDto> getUsersByIds(List<Long> ids) {
     return userRepository.findAllById(ids).stream()
             .map(userMapper::toDto).toList();
+  }
+
+  public List<UserDto> getUsersByIds(List<Long> ids, UserFilterDto filterDto) {
+    Stream<User> filteredUsers = userRepository.findAllById(ids).stream();
+
+    for (UserFilter filter : userFilters) {
+      if(filter.isApplicable(filterDto)) {
+        filteredUsers = filter.apply(filteredUsers, filterDto);
+      }
+    }
+
+    return userMapper.toDtos(filteredUsers.toList());
   }
 
   public UserDto deactivateUserProfile(Long userId) {
@@ -63,7 +79,7 @@ public class UserService {
       );
     }
   }
-
+  
   private User getUserById(long userId) {
     return userRepository.findById(userId).orElseThrow(
             () -> new ResourceNotFoundException(messageSource.getMessage("exception.user.not_found", new Object[]{userId}, Locale.getDefault())

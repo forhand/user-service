@@ -1,11 +1,10 @@
 package org.example.user_service.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.handler.exception.DataValidationException;
 import org.example.user_service.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,7 @@ public class UserController {
 
   @PostMapping("/register")
   public UserDto createUser(@RequestBody @Valid UserRegistrationDto user) {
-      return userService.createUser(user);
+    return userService.createUser(user);
   }
 
   @PutMapping("/{user_id}/deactivate")

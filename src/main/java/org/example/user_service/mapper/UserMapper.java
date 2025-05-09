@@ -23,11 +23,8 @@ public interface UserMapper {
   User toEntity(UserRegistrationDto dto);
 
   default List<Long> mapToUserIds(List<User> users) {
-    if (users == null) {
-      return Collections.emptyList();
-    }
-    return users.stream()
-            .map(User::getId)
-            .toList();
+    return null;
   }
+
+  List<UserDto> toDtos(List<User> list);
 }
