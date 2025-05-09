@@ -1,17 +1,23 @@
 package org.example.user_service.service;
 
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapperImpl;
 import org.example.user_service.repository.UserRepository;
+import org.example.user_service.util.container.UserDataContainer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,10 +40,26 @@ class UserServiceTest {
   private UserRepository userRepository;
   @Mock
   private MessageSource messageSource;
+  @Mock
+  private PasswordEncoder passwordEncoder;
   @Spy
   private UserMapperImpl userMapper;
   @InjectMocks
   private UserService userService;
+  @Captor
+  private ArgumentCaptor<User> captor;
+  private UserDataContainer userDataContainer;
+  private User user;
+  private UserDto userDto;
+
+
+  @BeforeEach
+  void setUp() {
+    captor = ArgumentCaptor.forClass(User.class);
+    userDataContainer = new UserDataContainer();
+    userDto = userDataContainer.getUserDto();
+    user = userDataContainer.getUser();
+  }
 
   @Test
   void testGetUserNotExist() {
@@ -61,28 +84,24 @@ class UserServiceTest {
 
   @Test
   void testCreateUser() {
-    String username = "Serg";
-    UserDto userDto = UserDto.builder()
-            .username(username).build();
-    User user = User.builder().username(username).build();
-    User expectedUser = User.builder()
-            .id(1L)
-            .username(username).build();
-    when(userRepository.save(user)).thenReturn(expectedUser);
+    UserRegistrationDto userRegistrationDto = userDataContainer.getUserRegistrationDto();
+    String password = userRegistrationDto.getPassword();
+    String encodedPassword = password + "_encoded";
+    when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
+    User user = userMapper.toEntity(userRegistrationDto);
+    user.setPassword(encodedPassword);
+    User savedUser = userMapper.toEntity(userRegistrationDto);
+    savedUser.setPassword(encodedPassword);
+    savedUser.setId(1L);
+    when(userRepository.save(user)).thenReturn(savedUser);
 
-    UserDto resultUserDto = userService.createUser(userDto);
+    UserDto actUserDto = userService.createUser(userRegistrationDto);
 
-    verify(userRepository).save(any(User.class));
-    assertEquals(userDto.getUsername(), resultUserDto.getUsername());
-    assertNotSame(userDto, resultUserDto);
-  }
-
-  @Test
-  public void testCreateUserWithNullArgument() {
-    UserDto userDto = null;
-    when(userRepository.save(null)).thenThrow(new IllegalArgumentException());
-
-    assertThrows(IllegalArgumentException.class, () -> userService.createUser(userDto));
+    verify(passwordEncoder, times(1)).encode(anyString());
+    verify(userRepository).save(captor.capture());
+    User actUserToSave = captor.getValue();
+    assertEquals(user, actUserToSave);
+    assertEquals(userMapper.toDto(savedUser), actUserDto);
   }
 
   @Test
@@ -112,7 +131,7 @@ class UserServiceTest {
     verify(userRepository, times(1)).findById(userId);
     verify(userRepository, times(1)).save(deactivatedUser);
     assertEquals(userDto.getId(), userId);
-    assertEquals(userDto.getActive(), Boolean.FALSE);
+    assertEquals(userDto.isActive(), Boolean.FALSE);
   }
 
   @Test
@@ -127,7 +146,7 @@ class UserServiceTest {
     verify(userRepository, times(1)).findById(userId);
     verify(userRepository, times(0)).save(deactivatedUser);
     assertEquals(userDto.getId(), userId);
-    assertEquals(userDto.getActive(), Boolean.FALSE);
+    assertEquals(userDto.isActive(), Boolean.FALSE);
   }
 
   @Test

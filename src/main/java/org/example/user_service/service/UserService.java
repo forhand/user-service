@@ -3,11 +3,13 @@ package org.example.user_service.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapper;
 import org.example.user_service.repository.UserRepository;
 import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,14 +22,16 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final MessageSource messageSource;
+  private final PasswordEncoder encoder;
 
   public UserDto getUser(long userId) {
     User user = getUserById(userId);
     return userMapper.toDto(user);
   }
 
-  public UserDto createUser(UserDto userDto) {
+  public UserDto createUser(UserRegistrationDto userDto) {
     User user = userMapper.toEntity(userDto);
+    user.setPassword(encoder.encode(user.getPassword()));
     User savedUser = userRepository.save(user);
     log.info("User {} created", savedUser.getId());
 
