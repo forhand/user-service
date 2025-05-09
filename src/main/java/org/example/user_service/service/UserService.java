@@ -8,8 +8,8 @@ import org.example.user_service.entity.User;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapper;
 import org.example.user_service.repository.UserRepository;
+import org.example.user_service.service.encoder.PasswordEncoder;
 import org.springframework.context.MessageSource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class UserService {
 
   public UserDto createUser(UserRegistrationDto userDto) {
     User user = userMapper.toEntity(userDto);
-    user.setPassword(encoder.encode(user.getPassword()));
+    user.setPassword(encoder.encode(userDto.getPassword()));
     User savedUser = userRepository.save(user);
     log.info("User {} created", savedUser.getId());
 
