@@ -65,7 +65,7 @@ public class UserDataContainer {
   }
 
   private List<User> getUsers() {
-    return new ArrayList(List.of(createNewUser(), createNewUser()));
+    return new ArrayList<>(List.of(createNewUser(), createNewUser()));
   }
 
   private User createNewUser() {
