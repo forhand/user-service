@@ -37,8 +37,18 @@ public class SubscriptionController {
   }
 
   @GetMapping("/followerCount/{userId}")
-  public int getFollowerCount(@PathVariable("userId") long followerId) {
-      return subscriptionService.getFollowerCount(followerId);
+  public int getFollowerCount(@PathVariable("userId") long followeeId) {
+      return subscriptionService.getFollowerCount(followeeId);
+  }
+
+  @GetMapping("/followers/{userId}")
+  public List<UserDto> getFollowers(@PathVariable("userId")long followeeId, UserFilterDto filterDto){
+    return subscriptionService.getFollowers(followeeId, filterDto);
+  }
+
+  @GetMapping("/followeeCount/{userId}")
+  public int getFollowingCount(@PathVariable("userId") long followerId) {
+    return subscriptionService.getFollowingCount(followerId);
   }
 
   @GetMapping("/following/{userId}")

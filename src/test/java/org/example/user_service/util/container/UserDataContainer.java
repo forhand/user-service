@@ -3,6 +3,8 @@ package org.example.user_service.util.container;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
+import org.example.user_service.entity.contact.ContactPreference;
+import org.example.user_service.entity.contact.PreferredContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +17,23 @@ public class UserDataContainer {
   private final String password;
   private String userEmail;
   private int age;
+  private ContactPreference contactPreference;
   private boolean active;
   private List<User> followers;
   private List<User> followees;
+  private PreferredContact preferredContact;
 
 
   public UserDataContainer() {
     userId = ++id;
     userName = "userName";
     userEmail = "email%d@domain.com".formatted(++id);
-    active = true;
     password = "password";
     age = 18;
-    this.followers = getUsers();
-    this.followees = getUsers();
+   preferredContact = PreferredContact.EMAIL;
+    active = true;
+    followers = getUsers();
+    followees = getUsers();
   }
 
   public User getUser() {
@@ -38,6 +43,7 @@ public class UserDataContainer {
             .password(password)
             .email(userEmail)
             .age(age)
+            .contactPreference(new ContactPreference(++id, new User(), preferredContact))
             .active(active)
             .followers(followers)
             .followees(followees)
@@ -51,6 +57,7 @@ public class UserDataContainer {
             .email(userEmail)
             .age(age)
             .active(active)
+            .preferredContact(preferredContact)
             .followerIds(getUserIds(followers))
             .followeeIds(getUserIds(followees))
             .build();

@@ -1,5 +1,6 @@
 package org.example.user_service.service.subscription;
 
+import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.handler.exception.DataValidationException;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.repository.SubscriptionRepository;
@@ -115,5 +116,19 @@ class SubscriptionDataValidatorTest {
     doThrow(new ResourceNotFoundException("User not found")).when(userService).validateUserExists(followeeId);
 
     assertThrows(ResourceNotFoundException.class, () -> validator.validateUnfollowUser(followerId, followeeId));
+  }
+
+  @Test
+  void validateUserExists_success() {
+    assertDoesNotThrow(() -> validator.validateUserExists(followerId));
+  }
+
+  @Test
+  void validateUserExists_throwResourceNotFount() {
+    doThrow(new ResourceNotFoundException("User not found"))
+        .when(userService)
+        .validateUserExists(followerId);
+
+    assertThrows(ResourceNotFoundException.class, () -> validator.validateUserExists(followerId));
   }
 }

@@ -2,6 +2,7 @@ package org.example.user_service.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.user_service.dto.event.user.UserRetrievedEvent;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserFilterDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
@@ -9,6 +10,9 @@ import org.example.user_service.entity.User;
 import org.example.user_service.filter.user.UserFilter;
 import org.example.user_service.handler.exception.ResourceNotFoundException;
 import org.example.user_service.mapper.UserMapper;
+import org.example.user_service.publisher.AbstractEventPublisher;
+import org.example.user_service.publisher.EventPublisher;
+import org.example.user_service.publisher.user.UserRetrievedPublisher;
 import org.example.user_service.repository.UserRepository;
 import org.example.user_service.service.encoder.PasswordEncoder;
 import org.springframework.context.MessageSource;
@@ -27,9 +31,15 @@ public class UserService {
   private final MessageSource messageSource;
   private final PasswordEncoder encoder;
   private final List<UserFilter> userFilters;
+  private final EventPublisherUtil eventPublisherUtil;
 
-  public UserDto getUser(long userId) {
+  public UserDto getUser(long userId, boolean skipEvent) {
     User user = getUserById(userId);
+    log.info("User {} found", user);
+    if(!skipEvent) {
+      UserRetrievedEvent event = new UserRetrievedEvent(user.getId());
+      eventPublisherUtil.publishEvent(event);
+    }
     return userMapper.toDto(user);
   }
 

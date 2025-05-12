@@ -22,12 +22,30 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        user:
+          user_retrieved:
+            name: user_retrieved
+        subscription:
+          user_subscription:
+            name: user_subscription
+          user_unsubscription:
+            name: user_unsubscription
+
 messages:
   basename: messages
 
 logging:
   level:
     root: info
+
+client:
+  skip_event:
+    header: X-Skip-Event
 
 server:
   port: 8080

@@ -32,6 +32,10 @@ public class SubscriptionDataValidator {
     checkSubscriptionNotExists(followerId, followeeId);
   }
 
+  public void validateUserExists(long followerId) {
+    userService.validateUserExists(followerId);
+  }
+
   private void checkSubscriptionExists(long followerId, long followeeId) {
     if (subscriptionRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
       throw new DataValidationException(
@@ -52,9 +56,5 @@ public class SubscriptionDataValidator {
     if(Objects.equals(followerId, followeeId)) {
       throw new DataValidationException(messageSource.getMessage("validation.subscribe.self.error", null, null));
     }
-  }
-
-  public void validateUserExists(long followerId) {
-    userService.validateUserExists(followerId);
   }
 }

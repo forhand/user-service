@@ -7,3 +7,7 @@ databaseChangeLog:
       file: db/changelog/changeset/V003__create_subscriptions_table.sql
   - include:
       file: db/changelog/changeset/V004__insert_subscription.sql
+  - include:
+      file: db/changelog/changeset/V005__create_contact_preferences.sql
+  - include:
+      file: db/changelog/changeset/V006__insert_contact_preferences.sql

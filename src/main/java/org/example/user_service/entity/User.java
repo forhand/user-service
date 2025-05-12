@@ -8,12 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.entity.contact.ContactPreference;
 
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class User {
   private Integer age;
   @Column(name = "active", nullable = false)
   private boolean active;
+  @OneToOne(mappedBy = "user")
+  private ContactPreference contactPreference;
   @ManyToMany
   @JoinTable(name = "subscriptions",
           joinColumns = @JoinColumn(name = "followee_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))

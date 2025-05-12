@@ -43,12 +43,14 @@ class UserServiceTest {
   private PasswordEncoder passwordEncoder;
   @Spy
   private UserMapperImpl userMapper;
+  @Mock
+  private EventPublisherUtil eventPublisherUtil;
   @InjectMocks
   private UserService userService;
   @Captor
   private ArgumentCaptor<User> captor;
   private UserDataContainer userDataContainer;
-  private User user;
+  private User userEntity;
   private UserDto userDto;
 
 
@@ -57,7 +59,7 @@ class UserServiceTest {
     captor = ArgumentCaptor.forClass(User.class);
     userDataContainer = new UserDataContainer();
     userDto = userDataContainer.getUserDto();
-    user = userDataContainer.getUser();
+    userEntity = userDataContainer.getUser();
   }
 
   @Test
@@ -65,20 +67,29 @@ class UserServiceTest {
     long invalidUserId = -1;
     when(userRepository.findById(invalidUserId)).thenThrow(new ResourceNotFoundException("User not found"));
 
-    assertThrows(ResourceNotFoundException.class, () -> userService.getUser(invalidUserId));
+    assertThrows(ResourceNotFoundException.class, () -> userService.getUser(invalidUserId, false));
   }
 
   @Test
   void testGetUser() {
-    long validUserId = 1;
-    User user = User.builder()
-            .id(validUserId)
-            .build();
-    when(userRepository.findById(validUserId)).thenReturn(Optional.ofNullable(user));
+    long validUserId = userEntity.getId();
+    when(userRepository.findById(validUserId)).thenReturn(Optional.ofNullable(userEntity));
 
-    UserDto actUserDto = userService.getUser(validUserId);
+    UserDto actUserDto = userService.getUser(validUserId, false);
 
     assertEquals(validUserId, actUserDto.getId());
+    verify(eventPublisherUtil, times(1)).publishEvent(any());
+  }
+
+  @Test
+  void testGetUserWOPublishEvent() {
+    long validUserId = userEntity.getId();
+    when(userRepository.findById(validUserId)).thenReturn(Optional.ofNullable(userEntity));
+
+    UserDto actUserDto = userService.getUser(validUserId, true);
+
+    assertEquals(validUserId, actUserDto.getId());
+    verify(eventPublisherUtil, times(0)).publishEvent(any());
   }
 
   @Test

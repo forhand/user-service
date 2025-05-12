@@ -57,7 +57,7 @@ class UserControllerTest {
     long userId = 1L;
     String urlTemplate = "%s/%d".formatted(url, userId);
     UserDto expectedUser = UserDto.builder().id(userId).build();
-    when(userService.getUser(userId)).thenReturn(expectedUser);
+    when(userService.getUser(userId, false)).thenReturn(expectedUser);
 
     mockMvc.perform(get(urlTemplate))
             .andExpect(status().isOk())

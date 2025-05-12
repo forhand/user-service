@@ -16,8 +16,11 @@ import org.springframework.context.MessageSource;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,8 @@ class SubscriptionServiceTest {
   private MessageSource messageSource;
   @Mock
   private SubscriptionDataValidator validator;
+  @Mock
+  private SubscriptionEventPublisherService publisherService;
   @InjectMocks
   private SubscriptionService service;
   private SubscriptionDataContainer subscriptionDataContainer;
@@ -43,6 +48,7 @@ class SubscriptionServiceTest {
   @Test
   void testFollowUser_successful() {
     assertDoesNotThrow(() -> service.followUser(1L, 2L));
+    verify(publisherService, times(1)).publishUserSubscriptionEvent(any());
   }
 
   @Test
@@ -62,6 +68,7 @@ class SubscriptionServiceTest {
   @Test
   void testUnfollowUser() {
     assertDoesNotThrow(() -> service.unfollowUser(1L, 2L));
+    verify(publisherService, times(1)).publishUserUnsubscriptionEvent(any());
   }
 
   @Test
@@ -81,7 +88,7 @@ class SubscriptionServiceTest {
   @Test
   void testGetFollowerCount() {
     int expectedCount = 10;
-    when(subscriptionRepository.findFolloweesAmountByFollowerId(anyLong())).thenReturn(expectedCount);
+    when(subscriptionRepository.findFollowersAmountByFolloweeId(anyLong())).thenReturn(expectedCount);
 
     int actualCount = service.getFollowerCount(1L);
 

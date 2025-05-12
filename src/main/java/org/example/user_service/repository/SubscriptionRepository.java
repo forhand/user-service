@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public interface SubscriptionRepository extends CrudRepository<User, Long> {
@@ -32,4 +33,28 @@ public interface SubscriptionRepository extends CrudRepository<User, Long> {
           """)
   List<Long> findFolloweeIdsByFollowerId(long followerId);
 
+
+  @Query(nativeQuery = true, value = """
+          select follower_id from subscriptions where followee_id = :followeeId
+          """)
+  List<Long> findFollowerIdsByFolloweeId(long followeeId);
+
+  @Query(nativeQuery = true, value = "select count(id) from subscriptions where followee_id = :followeeId")
+  int findFollowersAmountByFolloweeId(long followeeId);
+
+
+
+  @Query(nativeQuery = true, value = """
+          select u.* from users as u
+          join subscriptions as subs on u.id = subs.followee_id
+          where subs.follower_id = :followerId
+          """)
+  Stream<User> findByFollowerId(long followerId);
+
+  @Query(nativeQuery = true, value = """
+          select u.* from users as u
+          join subscriptions as subs on u.id = subs.follower_id
+          where subs.followee_id = :followeeId
+          """)
+  Stream<User> findByFolloweeId(long followeeId);
 }

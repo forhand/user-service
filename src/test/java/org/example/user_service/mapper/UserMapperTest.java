@@ -27,9 +27,9 @@ class UserMapperTest {
 
   @Test
   void toDto() {
-    UserDto dto = userMapper.toDto(user);
+    UserDto actDto = userMapper.toDto(user);
 
-    assertEquals(userDto, dto);
+    assertEquals(userDto, actDto);
   }
 
   @Test
