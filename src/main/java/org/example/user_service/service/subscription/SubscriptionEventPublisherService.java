@@ -1,23 +1,23 @@
 package org.example.user_service.service.subscription;
 
 import lombok.RequiredArgsConstructor;
-import org.example.user_service.dto.event.subscription.UserSubscriptionEvent;
-import org.example.user_service.dto.event.subscription.UserUnsubscriptionEvent;
-import org.example.user_service.publisher.subscription.UserSubscriptionPublisher;
-import org.example.user_service.publisher.subscription.UserUnsubscriptionPublisher;
+import org.example.user_service.dto.event.subscription.SubscribedEvent;
+import org.example.user_service.dto.event.subscription.UnsubscribedEvent;
+import org.example.user_service.publisher.subscription.SubscribedEventPublisher;
+import org.example.user_service.publisher.subscription.UnsubscribedEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class SubscriptionEventPublisherService {
-  private final UserSubscriptionPublisher userSubscriptionPublisher;
-  private final UserUnsubscriptionPublisher userUnsubscriptionPublisher;
+  private final SubscribedEventPublisher userSubscriptionPublisher;
+  private final UnsubscribedEventPublisher userUnsubscriptionPublisher;
 
-  public void publishUserSubscriptionEvent(UserSubscriptionEvent event) {
+  public void publishUserSubscriptionEvent(SubscribedEvent event) {
     userSubscriptionPublisher.publish(event);
   }
 
-  public void publishUserUnsubscriptionEvent(UserUnsubscriptionEvent event) {
+  public void publishUserUnsubscriptionEvent(UnsubscribedEvent event) {
     userUnsubscriptionPublisher.publish(event);
   }
 }

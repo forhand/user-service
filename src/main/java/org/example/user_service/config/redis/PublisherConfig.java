@@ -1,8 +1,8 @@
 package org.example.user_service.config.redis;
 
 import org.example.user_service.publisher.EventPublisher;
-import org.example.user_service.publisher.subscription.UserSubscriptionPublisher;
-import org.example.user_service.publisher.subscription.UserUnsubscriptionPublisher;
+import org.example.user_service.publisher.subscription.SubscribedEventPublisher;
+import org.example.user_service.publisher.subscription.UnsubscribedEventPublisher;
 import org.example.user_service.publisher.user.UserRetrievedPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,14 +14,14 @@ public class PublisherConfig {
 
   @Bean
   public EventPublisher<?> userSubscriptionPublisher(RedisTemplate<String, Object> redisTemplate,
-                                                  @Value("${spring.data.redis.channels.subscription.user_subscription.name}") String channelName) {
-    return new UserSubscriptionPublisher(redisTemplate, channelName);
+                                                  @Value("${spring.data.redis.channels.subscription.subscribed.name}") String channelName) {
+    return new SubscribedEventPublisher(redisTemplate, channelName);
   }
 
   @Bean
   public EventPublisher<?> userUnsubscriptionPublisher(RedisTemplate<String, Object> redisTemplate,
-                                                                   @Value("${spring.data.redis.channels.subscription.user_unsubscription.name}") String channelName) {
-    return new UserUnsubscriptionPublisher(redisTemplate, channelName);
+                                                                   @Value("${spring.data.redis.channels.subscription.unsubscribed.name}") String channelName) {
+    return new UnsubscribedEventPublisher(redisTemplate, channelName);
   }
 
   @Bean

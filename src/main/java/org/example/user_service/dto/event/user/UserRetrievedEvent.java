@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.example.user_service.dto.event.Event;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,4 +16,6 @@ import org.example.user_service.dto.event.Event;
 @EqualsAndHashCode
 public class UserRetrievedEvent extends Event {
   private long userId;
+  private long actorId;
+  private LocalDateTime eventAt;
 }

@@ -1,10 +1,10 @@
 package org.example.user_service.mapper;
 
+import org.example.user_service.dto.event.user.UserRetrievedEvent;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserRegistrationDto;
 import org.example.user_service.entity.User;
 import org.example.user_service.entity.contact.PreferredContact;
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,6 +26,13 @@ public interface UserMapper {
   User toEntity(UserRegistrationDto dto);
 
   List<UserDto> toDtos(List<User> list);
+
+  @Mapping(target = "userId", source = "id")
+  @Mapping(target = "eventAt", expression = "java(java.time.LocalDateTime.now())")
+  UserRetrievedEvent toUserRetrievedEvent(User entity);
+
+  // todo: mapper for SubscribedEvent
+  // todo: mapper for UnsubscribedEvent
 
   default PreferredContact mapToPreferredContact(User user) {
     if (user.getContactPreference() == null) {

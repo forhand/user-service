@@ -11,12 +11,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class EventPublisherUtil {
+public class EventPublisherService {
 
   private final List<EventPublisher<?>> eventPublishers;
 
   public <E extends Event> void publishEvent(E event) {
-
     eventPublishers.stream()
             .filter(p -> p.getEventType().isAssignableFrom(event.getClass()))
             .findFirst()

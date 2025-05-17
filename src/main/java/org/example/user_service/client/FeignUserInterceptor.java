@@ -4,6 +4,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.RequiredArgsConstructor;
 import org.example.user_service.config.context.UserContext;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 public class FeignUserInterceptor implements RequestInterceptor {

@@ -42,6 +42,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
     /**
      * Database

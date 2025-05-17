@@ -44,7 +44,7 @@ class UserServiceTest {
   @Spy
   private UserMapperImpl userMapper;
   @Mock
-  private EventPublisherUtil eventPublisherUtil;
+  private EventPublisherService eventPublisherUtil;
   @InjectMocks
   private UserService userService;
   @Captor

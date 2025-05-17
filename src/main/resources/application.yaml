@@ -31,10 +31,10 @@ spring:
           user_retrieved:
             name: user_retrieved
         subscription:
-          user_subscription:
-            name: user_subscription
-          user_unsubscription:
-            name: user_unsubscription
+          subscribed:
+            name: subscribed
+          unsubscribed:
+            name: unsubscribed
 
 messages:
   basename: messages

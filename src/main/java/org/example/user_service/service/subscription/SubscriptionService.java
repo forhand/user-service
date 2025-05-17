@@ -1,8 +1,8 @@
 package org.example.user_service.service.subscription;
 
 import lombok.RequiredArgsConstructor;
-import org.example.user_service.dto.event.subscription.UserSubscriptionEvent;
-import org.example.user_service.dto.event.subscription.UserUnsubscriptionEvent;
+import org.example.user_service.dto.event.subscription.SubscribedEvent;
+import org.example.user_service.dto.event.subscription.UnsubscribedEvent;
 import org.example.user_service.dto.userDto.UserDto;
 import org.example.user_service.dto.userDto.UserFilterDto;
 import org.example.user_service.repository.SubscriptionRepository;
@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,14 +26,14 @@ public class SubscriptionService {
   public void followUser(long followerId, long followeeId) {
     validator.validateFollowUser(followerId, followeeId);
     subscriptionRepository.followUser(followerId, followeeId);
-    publisherService.publishUserSubscriptionEvent(new UserSubscriptionEvent(followerId, followeeId));
+    publisherService.publishUserSubscriptionEvent(new SubscribedEvent(followerId, followeeId, LocalDateTime.now()));
   }
 
   @Transactional
   public void unfollowUser(long followerId, long followeeId) {
     validator.validateUnfollowUser(followerId, followeeId);
     subscriptionRepository.unfollowUser(followerId, followeeId);
-    publisherService.publishUserUnsubscriptionEvent(new UserUnsubscriptionEvent(followerId, followeeId));
+    publisherService.publishUserUnsubscriptionEvent(new UnsubscribedEvent(followerId, followeeId, LocalDateTime.now()));
   }
 
   public int getFollowerCount(long followeeId) {

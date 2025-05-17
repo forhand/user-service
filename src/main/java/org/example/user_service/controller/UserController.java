@@ -45,6 +45,8 @@ public class UserController {
     return userService.getUser(userId, skipEvent);
   }
 
+
+
   @PostMapping("/register")
   public UserDto createUser(@RequestBody @Valid UserRegistrationDto user) {
     return userService.createUser(user);
