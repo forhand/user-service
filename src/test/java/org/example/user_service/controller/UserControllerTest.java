@@ -3,7 +3,10 @@ package org.example.user_service.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.user_service.dto.userDto.UserDto;
+import org.example.user_service.dto.userDto.UserRegistrationDto;
+import org.example.user_service.handler.GlobalExceptionHandler;
 import org.example.user_service.service.UserService;
+import org.example.user_service.util.container.UserDataContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
@@ -34,23 +38,26 @@ class UserControllerTest {
   private UserController controller;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
+  private UserDataContainer container;
   private String url = "/api/users";
 
   @BeforeEach
   void setUp() {
-
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
 
     objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
+    container = new UserDataContainer();
   }
 
   @Test
   void testGetUser() throws Exception {
     long userId = 1L;
-    String urlTemplate = url + "/" + userId;
+    String urlTemplate = "%s/%d".formatted(url, userId);
     UserDto expectedUser = UserDto.builder().id(userId).build();
-    when(userService.getUser(userId)).thenReturn(expectedUser);
+    when(userService.getUser(userId, false)).thenReturn(expectedUser);
 
     mockMvc.perform(get(urlTemplate))
             .andExpect(status().isOk())
@@ -60,7 +67,7 @@ class UserControllerTest {
   @Test
   void testGetUserWithInvalidUserId() throws Exception {
     long invalidUserId = 0L;
-    String urlTemplate = url + "/" + invalidUserId;
+    String urlTemplate = "%s/%d".formatted(url, invalidUserId);
 
     mockMvc.perform(get(urlTemplate))
             .andExpect(status().isBadRequest());
@@ -69,8 +76,8 @@ class UserControllerTest {
   @Test
   void testCreateUser() throws Exception {
     String urlTemplate = url + "/register";
-    UserDto requestDto = UserDto.builder().username("user").build();
-    UserDto savedUser = UserDto.builder().id(1L).username("user").build();
+    UserRegistrationDto requestDto = container.getUserRegistrationDto();
+    UserDto savedUser = container.getUserDto();
     when(userService.createUser(requestDto)).thenReturn(savedUser);
 
     mockMvc.perform(post(urlTemplate)
@@ -79,6 +86,28 @@ class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is(savedUser.getId().intValue())))
             .andExpect(jsonPath("$.username", is(savedUser.getUsername())));
+  }
+
+  @Test
+  void testCreateUser_invalid() throws Exception {
+    String urlTemplate = url + "/register";
+    UserRegistrationDto invalidDto = UserRegistrationDto.builder()
+            .username("")
+            .password("          ")
+            .age(-1)
+            .email("invalidEmail")
+            .build();
+
+    mockMvc.perform(post(urlTemplate)
+                    .content(objectMapper.writeValueAsString(invalidDto))
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorMessages", hasSize(4)))
+            .andExpect(jsonPath("$.errorMessages[*]", containsInAnyOrder(
+                    "Username must not be blank",
+                    "Password must not be blank",
+                    "Age must be between 0 and 150",
+                    "Email must be valid")));
   }
 
   @Test
@@ -99,11 +128,10 @@ class UserControllerTest {
     List<UserDto> users = createUsers(userIds);
     when(userService.getUsersByIds(userIds)).thenReturn(users);
 
-
     mockMvc.perform(get(urlTemplate)
-              .param("userId", String.valueOf(userIds.get(0)))
-              .param("userId", String.valueOf(userIds.get(1)))
-              .param("userId", String.valueOf(userIds.get(2))))
+                    .param("userId", String.valueOf(userIds.get(0)))
+                    .param("userId", String.valueOf(userIds.get(1)))
+                    .param("userId", String.valueOf(userIds.get(2))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(users.size())))
             .andExpect(jsonPath("$[0].id", is(users.get(0).getId().intValue())));

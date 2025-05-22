@@ -1,8 +1,10 @@
-package org.example.user_service.exceptionHendler;
+package org.example.user_service.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -10,4 +12,5 @@ import lombok.Data;
 public class ErrorResponse {
   private String message;
   private String url;
+  private List<String> errorMessages;
 }

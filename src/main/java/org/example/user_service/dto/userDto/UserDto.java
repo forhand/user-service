@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.user_service.entity.contact.ContactPreference;
+import org.example.user_service.entity.contact.PreferredContact;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,8 +20,11 @@ public class UserDto {
   private Long id;
   @NotBlank
   private String username;
+  private int age;
   @NotBlank
-  private String password;
-  @NotNull
-  private Boolean active;
+  private String email;
+  private PreferredContact preferredContact;
+  private boolean active;
+  private List<Long> followerIds;
+  private List<Long> followeeIds;
 }

@@ -5,12 +5,47 @@ spring:
     username: user
     password: password
 
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        format_sql: true
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-server:
-  port: 8080
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        user:
+          user_retrieved:
+            name: user_retrieved
+        subscription:
+          subscribed:
+            name: subscribed
+          unsubscribed:
+            name: unsubscribed
+
+messages:
+  basename: messages
 
 logging:
   level:
     root: info
+
+client:
+  skip_event:
+    header: X-Skip-Event
+
+server:
+  port: 8080
